@@ -1,0 +1,41 @@
+services:
+
+  flask-app:
+    build:
+      context: app/flaskApp/
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - AppNetwork
+    ports:
+      - "8000:8000"
+    volumes:
+      - transfer:/usr/src/flaskApp/static/transfer
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  detector:
+    build:
+      context: app/plateDetector/
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - AppNetwork
+    ports:
+      - "8001:8001"
+    volumes:
+      - transfer:/usr/src/plateDetector/transfer
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  AppNetwork:
+
+volumes:
+  transfer:

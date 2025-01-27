@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Распознавание номеров</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-top: 20px;
+        }
+        .video-container {
+            text-align: center;
+        }
+        video {
+            width: 20%;
+            height: 10%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error-message {
+            margin-top: 20px;
+            color: #dc3545;
+        }
+        #loadingText {
+            margin-left: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Распознавание автомобильных номеров</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form id="uploadForm" action="/" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="video" class="form-label">Выберите видео для загрузки:</label>
+                        <input type="file" name="video" class="form-control" accept="video/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitButton">Загрузить</button>
+                </form>
+                <div id="loadingText" style="display:none;">
+                    <p id="loadtext">Дождитесь обработки видео...</p>
+                </div>
+            </div>
+        </div>
+
+        {% if not error_message and numbers%}
+        <div class="card">
+            <div class="card-body">
+                {% if video_filename %}
+                    <div class="video-container">
+                        <h5>Обработанное видео:</h5>
+                        <video controls>
+                            <source src="{{ url_for('static', filename='transfer/' + video_filename) }}" type="video/mp4">
+                            Ваш браузер не поддерживает воспроизведение видео.
+                        </video>
+                    </div>
+                {% endif %}
+
+                {% if numbers %}
+                    <div class="mt-4">
+                        <h5>Обнаруженные номера:</h5>
+                        <p>{{ numbers }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="error-message alert alert-danger">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <script>
+            const submitButton = document.getElementById('submitButton');
+            const loadingText = document.getElementById('loadingText');
+            const uploadForm = document.getElementById('uploadForm');
+
+            uploadForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                loadingText.style.display = 'inline-block';
+                submitButton.disabled = true;
+                uploadForm.submit();
+            });
+        </script>
+    </div>
+</body>
+</html>
